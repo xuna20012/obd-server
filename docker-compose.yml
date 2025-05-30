@@ -1,0 +1,132 @@
+version: '3.8'
+
+services:
+  # Serveur OBD SaaS
+  obd-saas-server:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: obd-saas-server
+    restart: unless-stopped
+    
+    # Ports
+    ports:
+      - "3000:3000"   # Interface web et API
+      - "6909:6909"   # TCP pour boîtiers OBD
+    
+    # Variables d'environnement
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - TCP_PORT=6909
+      - LOG_LEVEL=info
+      # Supabase (à configurer dans Coolify)
+      - SUPABASE_URL=${SUPABASE_URL:-https://your-project.supabase.co}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY:-your-service-key}
+      # Sécurité
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-this}
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+      - SOCKET_CORS_ORIGIN=${SOCKET_CORS_ORIGIN:-*}
+      # Rate limiting
+      - RATE_LIMIT_WINDOW=${RATE_LIMIT_WINDOW:-15}
+      - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-100}
+    
+    # Volumes pour persistance des logs
+    volumes:
+      - obd_logs:/app/logs
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Limites de ressources
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    
+    # Logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./logs:/app/logs
+      - .:/app
+      - /app/node_modules
+    networks:
+      - obd-network
+
+  # PostgreSQL (optionnel si pas de Supabase)
+  postgres:
+    image: postgres:15-alpine
+    container_name: obd-postgres
+    environment:
+      POSTGRES_DB: obd_saas
+      POSTGRES_USER: obd_user
+      POSTGRES_PASSWORD: obd_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    networks:
+      - obd-network
+
+  # Redis pour le cache (optionnel)
+  redis:
+    image: redis:7-alpine
+    container_name: obd-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - obd-network
+    command: redis-server --appendonly yes
+
+  # pgAdmin pour la gestion de base (optionnel)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: obd-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@obd-saas.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: unless-stopped
+    networks:
+      - obd-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
+  obd_logs:
+    driver: local
+
+networks:
+  obd-network:
+    driver: bridge
+  default:
+    name: obd-network 

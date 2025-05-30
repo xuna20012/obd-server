@@ -1,0 +1,60 @@
+{
+  "name": "obd-saas-server",
+  "version": "1.0.0",
+  "description": "🚗 Serveur SaaS moderne pour boîtiers OBD NR-B80 multi-tenant",
+  "main": "index.js",
+  "author": "Cheikhouna FALL",
+  "license": "MIT",
+  "keywords": [
+    "obd",
+    "saas",
+    "iot",
+    "tcp-server",
+    "websocket",
+    "vehicle-tracking",
+    "nr-b80",
+    "multi-tenant"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/votre-username/obd-saas-server.git"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Tests à implémenter\" && exit 0",
+    "healthcheck": "node healthcheck.js",
+    "docker:build": "docker build -t obd-saas-server .",
+    "docker:run": "docker run -p 3000:3000 -p 6909:6909 obd-saas-server",
+    "docker:compose": "docker-compose up -d",
+    "docker:logs": "docker-compose logs -f",
+    "docker:stop": "docker-compose down"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.4",
+    "helmet": "^7.1.0",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^7.1.5",
+    "compression": "^1.7.4",
+    "winston": "^3.11.0",
+    "winston-daily-rotate-file": "^4.7.1",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
+    "@supabase/supabase-js": "^2.38.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "nodemonConfig": {
+    "watch": ["src", "index.js"],
+    "ext": "js,json",
+    "ignore": ["logs/*", "node_modules/*"],
+    "delay": "1000"
+  }
+} 
