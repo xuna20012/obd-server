@@ -1,333 +1,256 @@
-# 🚗 OBD SaaS Server - Serveur Multi-Tenant pour Boîtiers OBD NR-B80
+# 🚗 Serveur OBD SaaS - Architecture Multi-Tenant
 
-## 📋 Description
+> **Serveur Node.js professionnel pour boîtiers OBD NR-B80 avec architecture SaaS complète**
 
-Serveur SaaS moderne pour la gestion de multiples boîtiers OBD NR-B80 avec architecture multi-tenant. Permet la collecte, l'analyse et la visualisation en temps réel des données véhicules pour plusieurs organisations.
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/node.js-18+-green.svg)](https://nodejs.org/)
+[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
+[![Coolify](https://img.shields.io/badge/coolify-deployable-purple.svg)](https://coolify.io/)
 
-## ✨ Fonctionnalités
+## 🎯 **Vue d'Ensemble**
 
-- **🏢 Multi-Tenant**: Support de plusieurs organisations avec isolation des données
-- **📡 TCP Server**: Serveur TCP pour recevoir les données des boîtiers OBD NR-B80
-- **🔄 Temps Réel**: WebSocket pour diffusion des données en temps réel
-- **🔐 Sécurité**: Authentification JWT avec gestion des rôles
-- **📊 Base de Données**: Intégration Supabase/PostgreSQL
-- **🚨 Alertes**: Système d'alertes automatiques (survitesse, surchauffe, etc.)
-- **📈 Analytics**: Rapports de voyages et statistiques de conduite
-- **🛡️ Robustesse**: Gestion d'erreurs, logging professionnel, rate limiting
+Serveur SaaS moderne et robuste pour la gestion de **flottes de boîtiers OBD NR-B80**. Architecture multi-tenant complète avec TCP server, API REST, WebSocket temps réel, et décodage protocolaire avancé.
 
-## 🏗️ Architecture
+### ✨ **Fonctionnalités Principales**
 
-```
-src/
-├── api/              # Routes API REST
-├── decoders/         # Décodeurs de protocole OBD
-├── database/         # Interface base de données
-├── middleware/       # Middlewares (auth, logging, etc.)
-├── tcp/              # Serveur TCP OBD
-└── utils/            # Utilitaires (logger, etc.)
-```
+🔌 **Serveur TCP Multi-Connexions**
+- Port 6909 pour boîtiers OBD NR-B80
+- Décodage protocole complet (commandes 3080, 3089, 308a, 308b)
+- Gestion automatique des déconnexions/reconnexions
+- Heartbeat et timeouts configurables
 
-## 🚀 Installation
+🌐 **API REST Complète**
+- Authentification JWT sécurisée
+- Endpoints CRUD pour appareils et organisations
+- Statistiques temps réel et métriques
+- Documentation Swagger intégrée
 
-### Prérequis
+📡 **WebSocket Temps Réel**
+- Diffusion instantanée des données OBD
+- Abonnements par appareil/organisation
+- Alertes en temps réel
+- Support multi-client simultané
 
-- **Node.js** >= 16.0.0
-- **NPM** >= 8.0.0
-- **PostgreSQL** (via Supabase)
-- **Compte Supabase**
+🚨 **Système d'Alertes Intelligent**
+- Surchauffe moteur (>100°C)
+- Excès de vitesse (>120 km/h)  
+- Batterie faible (<11V)
+- Perte signal GPS/connexion
 
-### Étapes d'installation
+🏗️ **Architecture Multi-Tenant**
+- Isolation complète par organisation
+- Gestion des utilisateurs et rôles
+- Scalabilité horizontale
+- Base de données flexible (locale/Supabase)
 
-1. **Cloner le projet**
+## 📊 **Données Décodées**
+
+### 🛰️ **GPS & Géolocalisation**
+- Coordonnées latitude/longitude
+- Vitesse GPS et direction
+- Nombre de satellites
+- Correction timezone Beijing
+
+### 🚗 **Données Moteur**
+- Charge moteur (%)
+- Température liquide refroidissement
+- Régime moteur (RPM)
+- Température admission air
+
+### ⛽ **Carburant & Consommation**
+- Consommation instantanée (L/100km)
+- Consommation moyenne
+- Pression carburant
+- Calculs d'économie
+
+### 🔋 **Système Véhicule**
+- Tension batterie
+- Signal GSM/4G
+- Odométre kilométrage
+- Position papillon des gaz
+- Flags de statut système
+
+## 🚀 **Déploiement Rapide**
+
+### **Option 1: Coolify (Recommandé)**
+
 ```bash
-git clone <repository-url>
-cd OBD-Modern-Server/nodejs-server
+# 1. Fork/Clone ce repository
+git clone https://github.com/votre-username/obd-saas-server.git
+
+# 2. Dans Coolify:
+# - Nouvelle Application → Docker Compose
+# - Repository: votre-repo
+# - Variables d'environnement (voir COOLIFY_DEPLOY.md)
+# - Ports: 3000 (HTTP) + 6909 (TCP)
+
+# 3. Déployer !
 ```
 
-2. **Installer les dépendances**
+### **Option 2: Docker Local**
+
 ```bash
-npm run setup
+# Clone et démarrage
+git clone https://github.com/votre-username/obd-saas-server.git
+cd obd-saas-server
+docker-compose up -d
+
+# Serveur disponible sur:
+# HTTP/API: http://localhost:3000
+# TCP OBD: localhost:6909
 ```
 
-3. **Configuration**
-```bash
-cp .env.example .env
-# Éditer le fichier .env avec vos configurations
-```
+### **Option 3: Node.js Direct**
 
-4. **Démarrer le serveur**
 ```bash
-# Mode développement
-npm run dev
-
-# Mode production
+git clone https://github.com/votre-username/obd-saas-server.git
+cd obd-saas-server
+npm install
 npm start
 ```
 
-## ⚙️ Configuration
+## 🔧 **Configuration**
 
-### Variables d'environnement principales
+### **Variables d'Environnement**
 
 ```env
 # Serveur
-PORT=3000
-TCP_PORT=6909
-
-# Supabase
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_KEY=your_service_key
-
-# JWT
-JWT_SECRET=your_secret_key
-```
-
-### Configuration Supabase
-
-1. Créer un projet Supabase
-2. Copier l'URL et la clé de service
-3. Configurer les tables (voir section Schéma)
-
-## 🗄️ Schéma de Base de Données
-
-### Tables principales
-
-```sql
--- Organisations (multi-tenant)
-CREATE TABLE organizations (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    subscription_plan VARCHAR(50) DEFAULT 'basic',
-    created_at TIMESTAMP DEFAULT NOW(),
-    is_active BOOLEAN DEFAULT true
-);
-
--- Appareils OBD
-CREATE TABLE obd_devices (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    device_id VARCHAR(50) UNIQUE NOT NULL,
-    organization_id UUID REFERENCES organizations(id),
-    name VARCHAR(255),
-    model VARCHAR(100) DEFAULT 'NR-B80',
-    status VARCHAR(20) DEFAULT 'offline',
-    metadata JSONB,
-    created_at TIMESTAMP DEFAULT NOW(),
-    last_seen TIMESTAMP
-);
-
--- Données temps réel
-CREATE TABLE obd_realtime_data (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    device_id VARCHAR(50) REFERENCES obd_devices(device_id),
-    timestamp TIMESTAMP NOT NULL,
-    -- GPS
-    latitude DECIMAL(10,7),
-    longitude DECIMAL(10,7),
-    speed_gps INTEGER,
-    direction INTEGER,
-    satellites INTEGER,
-    -- Moteur
-    engine_load DECIMAL(5,2),
-    engine_speed DECIMAL(7,2),
-    coolant_temp INTEGER,
-    intake_temp INTEGER,
-    -- Carburant
-    fuel_consumption_instant DECIMAL(6,2),
-    fuel_pressure INTEGER,
-    -- Véhicule
-    speed_obd INTEGER,
-    odometer INTEGER,
-    throttle_position DECIMAL(5,2),
-    -- Système
-    voltage DECIMAL(4,1),
-    gsm_signal INTEGER,
-    status_flags JSONB,
-    raw_data TEXT
-);
-
--- Rapports de voyages
-CREATE TABLE trip_reports (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    device_id VARCHAR(50) REFERENCES obd_devices(device_id),
-    trip_id VARCHAR(50),
-    start_time TIMESTAMP,
-    end_time TIMESTAMP,
-    distance DECIMAL(10,2),
-    fuel_consumed DECIMAL(8,2),
-    max_speed INTEGER,
-    avg_speed DECIMAL(5,2),
-    driving_time INTEGER,
-    idle_time INTEGER,
-    harsh_accelerations INTEGER,
-    harsh_brakes INTEGER,
-    speeding_events INTEGER,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Alertes
-CREATE TABLE alerts (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    device_id VARCHAR(50) REFERENCES obd_devices(device_id),
-    alert_type VARCHAR(50) NOT NULL,
-    severity VARCHAR(20) DEFAULT 'medium',
-    message TEXT,
-    data JSONB,
-    is_read BOOLEAN DEFAULT false,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-## 🔌 API Endpoints
-
-### Authentification
-- `POST /api/auth/login` - Connexion
-- `POST /api/auth/register` - Inscription
-
-### Appareils
-- `GET /api/devices` - Liste des appareils
-- `POST /api/devices` - Enregistrer un appareil
-- `GET /api/devices/:deviceId` - Détails d'un appareil
-
-### Données
-- `GET /api/data/realtime/:deviceId` - Données temps réel
-- `GET /api/data/trips/:deviceId` - Historique des voyages
-
-### Alertes
-- `GET /api/alerts` - Liste des alertes
-- `PATCH /api/alerts/:alertId/read` - Marquer comme lu
-
-### Dashboard
-- `GET /api/dashboard/stats` - Statistiques
-
-### Administration
-- `GET /api/admin/tcp-status` - Statut serveur TCP
-- `GET /api/admin/logs` - Logs système
-
-## 🔌 WebSocket Events
-
-### Connexion
-```javascript
-const socket = io('ws://localhost:3000');
-
-// Authentification
-socket.emit('authenticate', 'your_jwt_token');
-
-// Rejoindre une organisation
-socket.emit('join-organization', 'org_id');
-```
-
-### Événements
-- `obd-data` - Nouvelles données OBD
-- `alert` - Nouvelle alerte
-- `device-status` - Changement statut appareil
-
-## 🚗 Protocole OBD NR-B80
-
-### Format de trame
-```
-[Header][Device ID][Command][Length][Data][Checksum][Tail]
-  0x24     6 bytes    2 bytes  2 bytes  N bytes  1 byte   0x0D
-```
-
-### Commandes supportées
-- `3080` - Données GPS + OBD combinées
-- `3089` - Rapport allumage/extinction
-- `308a` - Statut lecture OBD
-- `308b` - Consommation moyenne
-
-## 🧪 Tests
-
-```bash
-# Tests unitaires
-npm test
-
-# Tests en mode watch
-npm run test:watch
-
-# Lint
-npm run lint
-npm run lint:fix
-```
-
-## 🔧 Scripts de développement
-
-```bash
-npm run dev      # Mode développement avec nodemon
-npm start        # Mode production
-npm run setup    # Installation + création dossiers
-```
-
-## 📊 Monitoring
-
-### Health Check
-```bash
-GET /health
-```
-
-Retourne:
-```json
-{
-  "status": "healthy",
-  "timestamp": "2024-01-15T10:30:00Z",
-  "activeOBDConnections": 5,
-  "uptime": 86400
-}
-```
-
-### Logs
-- Fichiers de logs dans `/logs/`
-- Logging structuré avec Winston
-- Catégories: OBD_DATA, TCP_CONNECTION, AUTHENTICATION, PERFORMANCE, ALERT
-
-## 🛡️ Sécurité
-
-- **JWT** pour l'authentification
-- **Helmet** pour sécuriser Express
-- **Rate limiting** par utilisateur
-- **CORS** configuré
-- **Validation** des données entrantes
-- **Hachage bcrypt** des mots de passe
-
-## 🚀 Déploiement
-
-### Docker (recommandé)
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-EXPOSE 3000 6909
-CMD ["npm", "start"]
-```
-
-### Variables d'environnement production
-```env
 NODE_ENV=production
 PORT=3000
 TCP_PORT=6909
-LOG_LEVEL=warn
+
+# Sécurité
+JWT_SECRET=votre-cle-super-secrete
+CORS_ORIGIN=https://votre-domaine.com
+
+# Base de données (optionnel)
+SUPABASE_URL=https://votre-projet.supabase.co
+SUPABASE_SERVICE_KEY=votre-cle-service
+
+# Logs & Performance
+LOG_LEVEL=info
+RATE_LIMIT_MAX=100
 ```
 
-## 🤝 Contribution
+### **Configuration Boîtiers OBD**
+
+```
+IP Serveur : votre-ip-serveur
+Port       : 6909
+Protocole  : TCP
+```
+
+## 📈 **Endpoints API**
+
+### **Authentification**
+- `POST /api/auth/login` - Connexion utilisateur
+- `POST /api/auth/register` - Inscription
+- `POST /api/auth/refresh` - Refresh token
+
+### **Appareils**
+- `GET /api/devices` - Liste appareils
+- `POST /api/devices` - Ajouter appareil
+- `GET /api/devices/:id/data` - Données temps réel
+- `PUT /api/devices/:id` - Modifier appareil
+
+### **Dashboard**
+- `GET /api/dashboard/stats` - Statistiques globales
+- `GET /api/dashboard/alerts` - Alertes récentes
+- `GET /api/dashboard/trips` - Historique trajets
+
+### **Monitoring**
+- `GET /health` - Health check
+- `GET /` - Informations serveur
+
+## 🔗 **WebSocket Events**
+
+```javascript
+// Connexion
+const socket = io('wss://votre-serveur.com', {
+  auth: { token: 'jwt-token' }
+});
+
+// Abonnement aux données
+socket.emit('subscribe-device', 'device-id');
+
+// Réception données
+socket.on('obd-data', (data) => {
+  console.log('Données OBD:', data);
+});
+
+// Alertes
+socket.on('alert', (alert) => {
+  console.log('Alerte:', alert.message);
+});
+```
+
+## 📚 **Documentation**
+
+- [🚀 Guide Déploiement Coolify](COOLIFY_DEPLOY.md)
+- [📖 Guide d'Utilisation](GUIDE_UTILISATION.md)
+- [🌐 Accès Internet](ACCES_INTERNET.md)
+- [✅ Status Projet](DEPLOY_READY.md)
+
+## 🧪 **Tests & Développement**
+
+```bash
+# Développement local
+npm run dev
+
+# Tests (à implémenter)
+npm test
+
+# Docker build
+npm run docker:build
+
+# Logs Docker
+npm run docker:logs
+```
+
+## 📦 **Structure Projet**
+
+```
+nodejs-server/
+├── 📄 package.json          # Dépendances et scripts
+├── 🚀 index.js             # Point d'entrée principal
+├── ❤️ healthcheck.js        # Health check Docker
+├── 🐳 Dockerfile           # Image Docker optimisée
+├── 🐳 docker-compose.yml   # Stack complète
+├── src/
+│   ├── 🛠️ utils/logger.js    # Logging professionnel
+│   ├── 💾 database/         # Interfaces base de données
+│   ├── 🔌 tcp/tcpServer.js  # Serveur TCP OBD
+│   ├── 🔓 decoders/         # Décodeurs protocole
+│   ├── 🌐 api/routes.js     # API REST
+│   └── 🔐 middleware/auth.js # Authentification
+└── 📚 Documentation/
+```
+
+## 🤝 **Contribution**
+
+Les contributions sont les bienvenues ! 
 
 1. Fork le projet
 2. Créer une branche feature (`git checkout -b feature/AmazingFeature`)
-3. Commit (`git commit -m 'Add some AmazingFeature'`)
-4. Push (`git push origin feature/AmazingFeature`)
+3. Commit les changements (`git commit -m 'Add AmazingFeature'`)
+4. Push vers la branche (`git push origin feature/AmazingFeature`)
 5. Ouvrir une Pull Request
 
-## 📄 Licence
+## 📝 **Licence**
 
-MIT License - voir [LICENSE](LICENSE) pour plus de détails.
+Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour les détails.
 
-## 👨‍💻 Auteur
+## 👨‍💻 **Auteur**
 
 **Cheikhouna FALL**
-- GitHub: [@your-username](https://github.com/your-username)
-- Email: your.email@example.com
+- 🚗 Spécialiste OBD & IoT
+- 🏗️ Architecte SaaS
+- 📧 Contact: [votre-email@domain.com]
 
-## 🙏 Remerciements
+## 🌟 **Support**
 
-- Analyse du protocole basée sur le code Java original du fournisseur
-- Inspiration architecturale: SaaS multi-tenant modernes
-- Communauté OBD pour le support du protocole 
+Si ce projet vous aide, donnez-lui une ⭐ !
+
+---
+
+**🚀 Prêt pour la production • 🔒 Sécurisé • 📈 Scalable • 🐳 Docker Ready** 
